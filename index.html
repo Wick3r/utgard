@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Documentation Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-utgard.html">utgard</a></li><li><a href="module-utgardIdService.html">utgardIdService</a></li><li><a href="module-utgardUtil.html">utgardUtil</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Clusterstatus.html">Clusterstatus</a></li><li><a href="KBResolver.html">KBResolver</a></li><li><a href="KBUIMessage.html">KBUIMessage</a></li><li><a href="SSUIMessage.html">SSUIMessage</a></li><li><a href="UIKBMessage.html">UIKBMessage</a></li><li><a href="UISSMessage.html">UISSMessage</a></li><li><a href="WeightCalculator.html">WeightCalculator</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+    <h3>utgard 1.3.3a</h3>
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+    <section class="readme-section">
+        <article><h1>Utgard.js Dokumentation</h1><h2>Für was utgard.js?</h2><p>Kern des Systems bilden das &quot;Logikzentrum&quot; Asgard und die &quot;Knowledgebase&quot; Hel. Kommunikation zwischen 
+diesen Komponenten findet auf TCP-Basis statt und wird mit einem eigenen binären Protokoll umgesetzt.</p>
+<p>utgard.js implementiert diese Protokolle in JavaScript und baut Websocket-Verbindungen zu einem Proxy-Server
+auf, der die Webocket-Frames &quot;entpackt&quot; und die Daten an Asgard und Hel weiterleitet.</p>
+<h2>Um was kümmert sich utgard.js?</h2><p>utgard.js baut zu Beginn je eine Verbindung zu Hel und eine zu Asgard auf. Mit jedem Verbindungsaufbau
+erstellt Asgard eine neue Session, die serverseitig nie gespeichert und beim Abbruch der Verbindung 
+wieder gelöscht wird.</p>
+<p>utgard.js bietet einfache™ Funktionen an, um Asgard mitzuteilen, was im Workspace des Nutzers passiert:</p>
+<ul>
+<li>Erstellen eines neuen Objektes</li>
+<li>Verschieben eines Objektes</li>
+<li>Größenveränderunge eines Objektes</li>
+<li>Entfernen eines Objektes (und einige andere Dinge)</li>
+</ul>
+<p>Jeder dieser Aktionen muss utgard mitgeteilt werden; daraufin wird eine Nachricht an Asgard geschickt,
+Asgard analysiert die aktuelle Konstellation und identifiziert einzelne und zusammengehörende Objekte.
+Asgard stellt je gefundenem &quot;Cluster&quot; eine Anfrage an die Knowledgebase: &quot;Schicke mir die IDs von allen Objekten,
+die mit jedem Objekt dieses Clusters eine Verbindung haben und das Gewicht dieser Verbindung&quot;.
+Die Antwort wird über Asgard an utgard.js weitergereicht. utgard sammelt die empfangenen IDs und erfragt
+sich bei der Knowledgebase den dazugehörigen &quot;content&quot;. Der content hat die Form</p>
+<p><code>de.iisys.va.allmightywebpackage@13.37/solveMyProblem</code></p>
+<p>Das Endergebnis wird durch utgard &quot;aufbereitet&quot; (dazu später mehr) und an einen Callback weitergeleitet
+(ab hier muss dann die BDE übernehmen).</p>
+<p>Weiterhin wird in einem späteres Release das Laden und Speichern ermöglicht (bzw. das Erstellen von JSON-
+Objekten die dafür eingesetzt werden können).</p>
+<h2>Benutzung</h2><p>Der folgende Codeblock demonstriert in vereinfachter Form die Handhabung von utgard.js.</p>
+<pre class="prettyprint source lang-javascript"><code>//init utgard
+//Konfiguration
+utgard.config.websockifyURL = 'ws://10.90.80.55'; //Websocket Adresse Asgard
+utgard.config.websockifyPort = 4444;              //Websocket Port    Asgard
+utgard.config.websockifyURL_KB = utgard.config.websockifyURL; //Websocket Adresse Hel
+utgard.config.websockifyPort_KB = 3333;                       //Websocket Port    Hel
+utgard.connectToServer(function(){ //stellt eine Verbindung zu Asgard UND Hel her
+    //onOpen -> will be called 0 - 2 times (Asgard and/or KB)
+    console.log(&quot;Verbindung hergestellt&quot;);
+}, function () {
+    //onError -> will be called 0 - 2 times (Asgard and/or KB)
+    console.log(&quot;Hoppla, da ging etwas schief&quot;);
+});
+utgard.setCallback(function(suggestionsMsg){ //Einrichten der Callback Funktion
+   console.log(suggestionsMsg); //in diesem Beispiel wird das Resultat nur auf der Konsole ausgegeben
+});
+
+//Die folgenden drei Funktionen sind hypothetische(!) Event-Handler der BDE
+var addHandler = function (evt) {
+    var objectID = idEnum++; //numerischer Wert, beginnend bei 8389000; Erstellen der ID kann noch in utgard integriert werden
+    var boundingBox = evt.source.getBoundingRect();  // x und y Coord + Länge/Breite
+    utgard.addObject({id: objectID, 
+        posX: boundingBox.left,
+        posY: boundingBox.top,
+        dimX: boundingBox.width,
+        dimY: boundingBox.height,
+        content: evt.source.getContent() //z.B. de.iisys.va.allmightywebpackage@13.37/solveMyProblem 
+    });
+};
+
+var moveHandler = function (evt) {
+    var objectID = evt.source.getID();
+    var boundingBox = evt.source.getBoundingRect();
+    utgard.moveBoundingA(boundingBox.left, boundingBox.top, objectID);
+};
+
+var removeHandler = function (evt) {
+    var objectID = evt.source.getID();
+    utgard.removeObjects([objectID]);
+};</code></pre><p>JSON-Beispiel (Callback-Funktion) mit einem Cluster der Größe 2 und 3 Vorschlägen.</p>
+<pre class="prettyprint source lang-javascript"><code>[
+  {
+    &quot;clusterEntities&quot;: [
+      8389000,  //diese IDs werden von der BDE vergeben, beginnend bei 8389000
+      8389001
+    ],
+    &quot;clusterSuggestionIds&quot;: [
+      108,      //diese IDs werden in der Datenbank verwenden und dienen dem Client
+      8960,     //zur Identifikation des zu herunterladenden Contents.
+      83        //Hier also 3 Vorschläge; die BDE muss sich um dieses Feld eigentlich nicht weiter kümmern
+    ],
+    &quot;clusterSuggestions&quot;: [
+      {
+        &quot;uri&quot;: &quot;de.iisys.va.wp@1.0.0/animal&quot;,   //1. Vorschlag mit Gewicht
+        &quot;weight&quot;: 0.5848
+      },
+      {
+        &quot;uri&quot;: &quot;de.incowia.iwas@1.3.5/zoo&quot;,     //2. Vorschlag mit Gewicht
+        &quot;weight&quot;: 0.891743847268731
+      },
+      {
+        &quot;uri&quot;: &quot;com.google.cubbleX@42.0.4/android9_pringles&quot;,     //3. Vorschlag mit Gewicht
+        &quot;weight&quot;: 0.35847
+      }
+    ]
+  }
+]</code></pre><p>Abschließend ein Beispiel wie, mit Hilfe von <em>mustache</em> die Ergebnisse dargestellt werden können.</p>
+<p>index.html</p>
+<pre class="prettyprint source lang-html"><code>&lt;table class=&quot;table&quot;>
+        &lt;thead>
+        &lt;tr>
+            &lt;th>#&lt;/th>
+            &lt;th colspan=&quot;3&quot;>Nachricht&lt;/th>
+        &lt;/tr>
+        &lt;/thead>
+        &lt;tbody class=&quot;msgtbl&quot;>
+
+        &lt;/tbody>
+       &lt;!-- insert entries at top of the table -->
+&lt;/table></code></pre><p>tableEntry.mst</p>
+<pre class="prettyprint source lang-html"><code>&lt;tr>
+    &lt;th rowspan=&quot;{{c_combined}}&quot; scope=&quot;row&quot;>{{msg_nr}}&lt;/th>
+    &lt;td rowspan=&quot;{{c_cluster}}&quot;>IDs&lt;/td>
+
+
+{{#i_cluster}}
+    {{#first}}
+            &lt;td colspan=&quot;1&quot;>{{id}}&lt;/td>
+            &lt;td colspan=&quot;1&quot;>{{name}}&lt;/td>
+        &lt;/tr>
+    {{/first}}
+    {{#next}}
+        &lt;tr>
+            &lt;td colspan=&quot;1&quot;>{{id}}&lt;/td>
+            &lt;td colspan=&quot;1&quot;>{{name}}&lt;/td>
+        &lt;/tr>
+    {{/next}}
+{{/i_cluster}}
+
+&lt;tr>
+    &lt;td rowspan=&quot;{{c_sugs}}&quot;>Vorschläge&lt;/td>
+
+{{#i_sugs}}
+    {{#first}}
+            &lt;td>{{weight}}&lt;/td>
+            &lt;td>{{name}}&lt;/td>
+        &lt;/tr>
+    {{/first}}
+    {{#next}}
+        &lt;tr>
+            &lt;td>{{weight}}&lt;/td>
+            &lt;td>{{name}}&lt;/td>
+        &lt;/tr>
+    {{/next}}
+{{/i_sugs}}</code></pre><p>main.js</p>
+<pre class="prettyprint source lang-javascript"><code>utgard.setCallback(showSuggestion);
+
+function showSuggestion(sugMsg){
+     console.log(sugMsg);
+     $.notify(sugMsg.length + ' cluster(s) found', {position: 'top center', className: 'info'});
+     for(var i = 0, l = sugMsg.length; i &lt; l; i++){
+         counter++;
+         var entry = {
+             msg_nr: counter,
+             c_cluster: sugMsg[i].clusterEntities.length,
+             c_sugs: sugMsg[i].clusterSuggestionIds.length,
+             c_combined: sugMsg[i].clusterEntities.length + sugMsg[i].clusterSuggestionIds.length,
+             i_cluster: [],
+             i_sugs: []
+         };
+
+         for(var k = 0; k &lt; entry.c_cluster; k++){
+             var obj = {
+                 id: sugMsg[i].clusterEntities[k].id,
+                 name: getContent(sugMsg[i].clusterEntities[k].id)
+             };
+             if(k == 0){
+                 obj.first = true;
+             } else {
+                 obj.next = true;
+             }
+             entry.i_cluster.push(obj);
+         }
+
+         for(var j = 0; j &lt; entry.c_sugs; j++){
+             var obj = {
+                 name: sugMsg[i].clusterSuggestions[j].uri,
+                 weight: sugMsg[i].clusterSuggestions[j].weight
+             };
+
+             if(j == 0){
+                 obj.first = true;
+             } else {
+                 obj.next = true;
+             }
+             entry.i_sugs.push(obj)
+         }
+
+         var rendered = Mustache.render(template, entry);
+         $('.msgtbl').prepend(rendered);
+
+     }
+ }</code></pre></article>
+    </section>
+
+
+
+
+
+
+
+	<h1 class="page-title">Index</h1>
+<section>
+
+<header>
+    
+        <h2>
+        utgard.clusterstatus.js
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="mailto:daniel.rossner@iisys.de">Daniel Roßner</a></li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	<h1 class="page-title">Index</h1>
+<section>
+
+<header>
+    
+        <h2>
+        utgard.core.js
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Entry Point for external usage</p></div>
+        
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="mailto:daniel.rossner@iisys.de">Daniel Roßner</a></li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	<h1 class="page-title">Index</h1>
+<section>
+
+<header>
+    
+        <h2>
+        utgard.idservice.js
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Offers functions to query the IdService</p></div>
+        
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="mailto:daniel.rossner@iisys.de">Daniel Roßner</a></li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	<h1 class="page-title">Index</h1>
+<section>
+
+<header>
+    
+        <h2>
+        utgard.kbresolver.js
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Class implementing content resolver for ssui messages</p></div>
+        
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="mailto:daniel.rossner@iisys.de">Daniel Roßner</a></li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	<h1 class="page-title">Index</h1>
+<section>
+
+<header>
+    
+        <h2>
+        utgard.kbui.js
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Class implementing the the KBUI01 protocol structure</p></div>
+        
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="mailto:daniel.rossner@iisys.de">Daniel Roßner</a></li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	<h1 class="page-title">Index</h1>
+<section>
+
+<header>
+    
+        <h2>
+        utgard.ssui.js
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Class implementing the the SSUI01 protocol structure</p></div>
+        
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="mailto:daniel.rossner@iisys.de">Daniel Roßner</a></li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	<h1 class="page-title">Index</h1>
+<section>
+
+<header>
+    
+        <h2>
+        utgard.uikb.js
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Class implementing the the UIKB01 protocol structure</p></div>
+        
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="mailto:daniel.rossner@iisys.de">Daniel Roßner</a></li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	<h1 class="page-title">Index</h1>
+<section>
+
+<header>
+    
+        <h2>
+        utgard.uiss.js
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Class implementing the the UISS01 protocol structure</p></div>
+        
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="mailto:daniel.rossner@iisys.de">Daniel Roßner</a></li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	<h1 class="page-title">Index</h1>
+<section>
+
+<header>
+    
+        <h2>
+        utgard.util.js
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Includes several util methods</p></div>
+        
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="mailto:daniel.rossner@iisys.de">Daniel Roßner</a></li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	<h1 class="page-title">Index</h1>
+<section>
+
+<header>
+    
+        <h2>
+        utgard.weightcalculator.js
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+	<dt class="tag-author method-doc-label method-doc-details-label">Author:</dt>
+	<dd class="tag-author">
+		<ul>
+			<li><a href="mailto:daniel.rossner@iisys.de">Daniel Roßner</a></li>
+			</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	
+		on September 11th 2017, 4:31:38 pm
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
