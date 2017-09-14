@@ -91,7 +91,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="UISSMessage"><span class="type-signature"></span>new UISSMessage(millis [, finalMessage])</h4>
+    <h4 class="name" id="UISSMessage"><span class="type-signature"></span>new UISSMessage( [millis] [, finalMessage])</h4>
     
     
 </dt>
@@ -159,6 +159,8 @@
             
                 <td class="attributes">
                 
+                    &lt;optional><br>
+                
 
                 
 
@@ -169,10 +171,12 @@
             
                 <td class="default">
                 
+                    0
+                
                 </td>
             
 
-            <td class="description last"><p>of Date.now()</p></td>
+            <td class="description last"><p>millis of Date.now() in most cases</p></td>
         </tr>
 
     
@@ -532,7 +536,7 @@ implemented.</p>
             
 <hr>
 <dt>
-    <h4 class="name" id="allocate"><span class="type-signature"></span>allocate(data)</h4>
+    <h4 class="name" id="allocate"><span class="type-signature"></span>allocate(data [, time])</h4>
     
     
 </dt>
@@ -563,6 +567,8 @@ implemented.</p>
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -589,11 +595,53 @@ implemented.</p>
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
             <td class="description last"><p>the specific data for the set action. see <a href="UISSMessage.html#.newObject">UISSMessage.newObject</a>, <a href="UISSMessage.html#.changeColorObj">UISSMessage.changeColorObj</a>,
 <a href="UISSMessage.html#.moveBoundingAObj">UISSMessage.moveBoundingAObj</a>, <a href="UISSMessage.html#.resizeBoundingAObj">UISSMessage.resizeBoundingAObj</a> and <a href="UISSMessage.html#.changeContentObj">UISSMessage.changeContentObj</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>this is an optional parameter, if not set, method calculates the time with this.millis field</p></td>
         </tr>
 
     
@@ -967,6 +1015,284 @@ implemented.</p>
     <dd>
         
 <span class="param-type">String</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getMessageData"><span class="type-signature"></span>getMessageData()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>a object representation containing all the message fields</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="loadFromData"><span class="type-signature"></span>loadFromData(data [, finalMessage])</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Initializes an UISSMessage from a js object created by <a href="UISSMessage.html#getMessageData">UISSMessage#getMessageData</a></p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>valid json, for implementation simplicity, it is only allowed to use single-id messages</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>finalMessage</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>overwrites flag information from the input data</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="UISSMessage.html">UISSMessage</a></span>
 
 
 
@@ -2313,7 +2639,7 @@ implemented.</p>
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on September 11th 2017, 4:31:38 pm
+		on September 14th 2017, 3:13:02 pm
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
